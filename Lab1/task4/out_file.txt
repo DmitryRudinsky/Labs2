@@ -1,0 +1,5 @@
+Number of non-letters, non-digits and non-space symbols on this string: 17
+Number of non-letters, non-digits and non-space symbols on this string: 2
+Number of non-letters, non-digits and non-space symbols on this string: 1
+Number of non-letters, non-digits and non-space symbols on this string: 2
+Number of non-letters, non-digits and non-space symbols on this string: 2
