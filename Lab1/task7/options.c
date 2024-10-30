@@ -17,7 +17,7 @@ int ConvertToBase(char symbol, int base) {
     return result;
 }
 
-// Обрабатывает режим 'r' и объединяет содержимое двух файлов
+// Обрабатывает режим 'task4' и объединяет содержимое двух файлов
 void ProcessRMode(FILE *file1, FILE *file2, FILE *file3) {
     char a1 = fgetc(file1);
     char a2 = fgetc(file2);

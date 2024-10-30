@@ -68,7 +68,7 @@ int findSubstringInFiles(char *substring, char **answer, int quantity, ...) {
     char *name;
     for (int i = 0; i < quantity; ++i) {
         name = va_arg(files, char*);
-        file = fopen(name, "r");
+        file = fopen(name, "task4");
         if (!file) {
             fclose(file);
             return file_error;

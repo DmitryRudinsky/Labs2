@@ -1,4 +1,4 @@
-# Install script for directory: /Users/gula-dmitrii/CLionProjects/MAI/Lab2/task1
+# Install script for directory: /Users/gula-dmitrii/CLionProjects/MAI LABS/Lab2/task1
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

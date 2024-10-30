@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     FILE *file1, *file2, *file3;
 
     if (flag == 'r' && (strcmp(argv[2], argv[3]) == 0 || strcmp(argv[2], argv[4]) == 0 || strcmp(argv[3], argv[4]) == 0)) {
-        printf("Error: Same file names detected in 'r' mode\n");
+        printf("Error: Same file names detected in 'task4' mode\n");
         return ERROR_FILE;
     }
 
@@ -27,13 +27,13 @@ int main(int argc, char *argv[]) {
 
     switch (flag) {
         case 'r':
-            file1 = fopen(argv[2], "r");
+            file1 = fopen(argv[2], "task4");
             if (file1 == NULL) {
                 printf("Error opening the first file\n");
                 return ERROR_FILE;
             }
 
-            file2 = fopen(argv[3], "r");
+            file2 = fopen(argv[3], "task4");
             if (file2 == NULL) {
                 printf("Error opening the second file\n");
                 fclose(file1);
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
             break;
 
         case 'a':
-            file1 = fopen(argv[2], "r");
+            file1 = fopen(argv[2], "task4");
             if (file1 == NULL) {
                 printf("Error opening the first file\n");
                 return ERROR_FILE;

@@ -736,8 +736,8 @@ char const info_version[] = {
 #ifdef COMPILER_VERSION_INTERNAL
 char const info_version_internal[] = {
   'I', 'N', 'F', 'O', ':',
-  'c','o','m','p','i','l','e','r','_','v','e','r','s','i','o','n','_',
-  'i','n','t','e','r','n','a','l','[',
+  'c','o','m','p','i','l','e','task4','_','v','e','task4','s','i','o','n','_',
+  'i','n','t','e','task4','n','a','l','[',
   COMPILER_VERSION_INTERNAL,']','\0'};
 #elif defined(COMPILER_VERSION_INTERNAL_STR)
 char const* info_version_internal = "INFO" ":" "compiler_version_internal[" COMPILER_VERSION_INTERNAL_STR "]";
@@ -747,7 +747,7 @@ char const* info_version_internal = "INFO" ":" "compiler_version_internal[" COMP
 #ifdef SIMULATE_VERSION_MAJOR
 char const info_simulate_version[] = {
   'I', 'N', 'F', 'O', ':',
-  's','i','m','u','l','a','t','e','_','v','e','r','s','i','o','n','[',
+  's','i','m','u','l','a','t','e','_','v','e','task4','s','i','o','n','[',
   SIMULATE_VERSION_MAJOR,
 # ifdef SIMULATE_VERSION_MINOR
   '.', SIMULATE_VERSION_MINOR,

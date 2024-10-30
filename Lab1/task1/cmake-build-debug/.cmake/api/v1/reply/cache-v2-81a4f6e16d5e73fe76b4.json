@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/gula-dmitrii/CLionProjects/MAI/Lab1/task1/cmake-build-debug"
+			"value" : "/Users/gula-dmitrii/CLionProjects/MAI LABS/Lab1/task1/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -383,7 +383,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/gula-dmitrii/CLionProjects/MAI/Lab1/task1/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "/Users/gula-dmitrii/CLionProjects/MAI LABS/Lab1/task1/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -443,7 +443,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/Users/gula-dmitrii/CLionProjects/MAI/Lab1/task1"
+			"value" : "/Users/gula-dmitrii/CLionProjects/MAI LABS/Lab1/task1"
 		},
 		{
 			"name" : "CMAKE_INSTALL_NAME_TOOL",
@@ -1015,7 +1015,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/gula-dmitrii/CLionProjects/MAI/Lab1/task1/cmake-build-debug"
+			"value" : "/Users/gula-dmitrii/CLionProjects/MAI LABS/Lab1/task1/cmake-build-debug"
 		},
 		{
 			"name" : "task1_IS_TOP_LEVEL",
@@ -1039,7 +1039,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/Users/gula-dmitrii/CLionProjects/MAI/Lab1/task1"
+			"value" : "/Users/gula-dmitrii/CLionProjects/MAI LABS/Lab1/task1"
 		}
 	],
 	"kind" : "cache",

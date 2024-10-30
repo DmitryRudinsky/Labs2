@@ -113,7 +113,7 @@ StatusCode columnAddition(int base, char* l, char* r, char** ans)
     return OK;
 }
 
-StatusCode someBaseSum(int base, char** ans, int n,...)
+StatusCode someBaseSum(int base, char** ans, int n, ...)
 {
     if (ans == NULL || n < 2) return INVALID_PARAMS;
 

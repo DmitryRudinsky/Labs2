@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/gula-dmitrii/CLionProjects/MAI/Lab1/task1/cmake-build-debug",
-		"source" : "/Users/gula-dmitrii/CLionProjects/MAI/Lab1/task1"
+		"build" : "/Users/gula-dmitrii/CLionProjects/MAI LABS/Lab1/task1/cmake-build-debug",
+		"source" : "/Users/gula-dmitrii/CLionProjects/MAI LABS/Lab1/task1"
 	},
 	"version" : 
 	{

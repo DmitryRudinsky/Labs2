@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
         printf("Input error! Input and output files cannot be the same.\n");
         return 1;
     }
-    FILE *input = fopen(argv[1], "r");
+    FILE *input = fopen(argv[1], "task4");
     if (!input) {
         perror("Ошибка открытия входного файла");
         return 1;

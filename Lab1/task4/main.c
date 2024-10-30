@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
         state = argv[1][2];
     }
 
-    FILE *input = fopen(input_file, "r");
+    FILE *input = fopen(input_file, "task4");
     if (!input) {
         printf("ERROR: input-file can not be opened.\n");
         return 0;

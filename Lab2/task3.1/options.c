@@ -9,7 +9,7 @@ status substrings_function(answer** result, int* substrings_amount, const char* 
     va_start(filenames, file_amount);
     for (int i = 0; i < file_amount; i++){
         char* filename = va_arg(filenames, char*);
-        FILE* file = fopen(filename, "r");
+        FILE* file = fopen(filename, "task4");
         if (!file) continue;
         int current_string = 1;
         int current_symbol = 0;

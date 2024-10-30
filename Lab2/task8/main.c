@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include "options.h"
 
-int main(int argc, char** argv)
+#define MAX(a, b) a > b ? a : b
+
+int main()
 {
     StatusCode status;
     char* ans;
