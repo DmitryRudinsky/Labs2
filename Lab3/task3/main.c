@@ -16,7 +16,7 @@ int main(int argc, char * argv[])
         return incorrect_input;
     }
 
-    FILE * input = fopen(input_name, "task4");
+    FILE * input = fopen(input_name, "r");
     if (!input)
     {
         print_error(file_open_error);

@@ -43,11 +43,15 @@ status_code decrement(int* n) {
 }
 
 status_code str_to_int(char* in, int* out, int* neg) {
-    if (in == NULL || out == NULL || neg == NULL) return incorrect_input;
+    if (in == NULL || out == NULL || neg == NULL) {
+        return incorrect_input;
+    }
     if (in[0] == '-') {
         *neg = 1;
         ++in;
-    } else *neg = 0;
+    } else {
+        *neg = 0;
+    }
 
     errno = 0;
     char* end = NULL;
