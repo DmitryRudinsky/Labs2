@@ -2,9 +2,10 @@
 
 status_code create_string(String* str, char* s)
 {
-    if (str == NULL) return INVALID_PARAMS;
-    if (s == NULL)
-    {
+    if (str == NULL) {
+        return INVALID_PARAMS;
+    }
+    if (s == NULL) {
         str->length = 0;
         str->head = NULL;
         return OK;
@@ -12,8 +13,7 @@ status_code create_string(String* str, char* s)
 
     str->length = strlen(s);
     str->head = (char*) malloc(sizeof(char) * (str->length + 1));
-    if (str->head == NULL)
-    {
+    if (str->head == NULL) {
         return MALLOC_ERROR;
     }
     strcpy(str->head, s);
@@ -40,7 +40,9 @@ status_code string_insert(String* str, char c)
 
 status_code destruct_string(String* str)
 {
-    if (str == NULL) return INVALID_PARAMS;
+    if (str == NULL) {
+        return INVALID_PARAMS;
+    }
     free(str->head);
     str->head = NULL;
     str->length = 0;
@@ -280,13 +282,13 @@ status_code get_string(String* input)
 {
     char c;
     status_code status;
-    if (input == NULL) return INVALID_PARAMS;
+    if (input == NULL) {
+        return INVALID_PARAMS;
+    }
     c = getchar();
-    while(c != '\n')
-    {
+    while(c != '\n') {
         status = string_insert(input, c);
-        if(status)
-        {
+        if(status) {
             destruct_string(input);
             return status;
         }
@@ -507,11 +509,15 @@ status_code read_mail(Mail* mail)
     status_code status;
     String str;
     double n;
-    if (mail == NULL) return INVALID_PARAMS;
+    if (mail == NULL) {
+        return INVALID_PARAMS;
+    }
 
     printf("Entering the receiver address:\n");
     status = read_adress(&(mail->receiver_address));
-    if (status) return status;
+    if (status) {
+        return status;
+    }
 
     create_string(&str, NULL);
     printf("Mail ID (14 digits): ");
@@ -548,7 +554,9 @@ status_code read_mail(Mail* mail)
 
 status_code read_post(Post* post)
 {
-    if (post == NULL) return INVALID_PARAMS;
+    if (post == NULL) {
+        return INVALID_PARAMS;
+    }
 
     post->mails_cnt = 0;
     printf("Entering the post address:\n");
