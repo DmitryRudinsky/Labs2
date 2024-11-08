@@ -25,7 +25,10 @@ int main(int argc, char** argv) {
         printf("%s", errors[incorrect_input]);
         return 1;
     }
-
+    if (number == 0) {
+        printf("%d\n", number);
+        return 0;
+    }
     to_binbase_system(number, base, &ans, &len);
     if (neg) printf("-");
     for (int i = 0; i < len; increment(&i))

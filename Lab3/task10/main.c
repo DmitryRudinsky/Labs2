@@ -21,8 +21,11 @@ int main(int argc, char* argv[]){
     Node* tree = NULL;
     while(status_code == ok){
         status_code = get_string(in, &string);
-        if (status_code == allocation_error) break;
-        if (tree_from_expression(string, &tree)!= ok) {
+        if (status_code == allocation_error) {
+            free(string);
+            break;
+        }
+        if (tree_from_expression(string, &tree) != ok) {
             free_tree(tree);
             free(string);
             printf("Allocation error");

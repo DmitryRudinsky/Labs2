@@ -71,43 +71,38 @@ status_code str_to_int(char* in, int* out, int* neg) {
 
 status_code to_binbase_system(int n, int r, int** ans, int* length) {
     if (ans == NULL || length == NULL) return incorrect_input;
-    if (n == 0) {
-        *ans = (int*) malloc(sizeof(char));
-        if (*ans == NULL)
-        {
-            return malloc_error;
-        }
-        **ans = '0';
-        *length = 1;
-        return ok;
-    }
 
-    *ans = (int*) malloc(8 * sizeof(n));
+    int buffer_size = 8;
+    *ans = (int*) malloc(buffer_size * sizeof(int));
     if (*ans == NULL) {
         return malloc_error;
     }
 
-    int mask = 1;
-    for (int i = 1; i < r; increment(&i)) {
-        mask <<= 1;
-        increment(&mask);
-    }
-
+    int mask = (1 << r) - 1;
     *length = 0;
+
     while (n != 0) {
-        (*ans)[*length] = (n & mask);
+        if (*length >= buffer_size) {
+            buffer_size *= 2;
+            int* new_ans = (int*) realloc(*ans, buffer_size * sizeof(int));
+            if (new_ans == NULL) {
+                free(*ans);
+                return malloc_error;
+            }
+            *ans = new_ans;
+        }
+
+        (*ans)[*length] = n & mask;
         n >>= r;
-        increment(length);
+        (*length)++;
     }
 
-    int i = *length - 1;
-    int j = 0;
-    while (i > j) {
-        mask = (*ans)[i];
-        (*ans)[i] = (*ans)[j];
-        (*ans)[j] = mask;
-        decrement(&i);
-        increment(&j);
+    for (int i = 0; i < *length / 2; i++) {
+        int temp = (*ans)[i];
+        (*ans)[i] = (*ans)[*length - i - 1];
+        (*ans)[*length - i - 1] = temp;
     }
+
     return ok;
 }
+

@@ -47,16 +47,20 @@ status tree_from_expression(char* expression, Node** tree){
             case '(':
                 ++ptr;
                 skip_delimiter(&ptr);
-                new_son(current, *ptr);
-                if (!current->son) return allocation_error;
+                if (new_son(current, *ptr) != ok) {
+                    free_tree(*tree);
+                    return allocation_error;
+                }
                 current = current->son;
                 ++ptr;
                 break;
             case ',':
                 ++ptr;
                 skip_delimiter(&ptr);
-                new_brother(current, *ptr);
-                if (!current->brother) return allocation_error;
+                if (new_brother(current, *ptr) != ok) {
+                    free_tree(*tree);
+                    return allocation_error;
+                }
                 current = current->brother;
                 ++ptr;
                 break;
@@ -85,12 +89,14 @@ void print_tree(FILE*const file, Node* node, int level){
     return;
 }
 
+
 status get_string(FILE* in, char** string){
     char symbol = fgetc(in);
     int capacity = 2;
     int length = 0;
     *string = (char*)malloc(sizeof(char) * capacity);
     if (!(*string)) return allocation_error;
+
     while (symbol != '\n' && symbol != EOF){
         (*string)[length] = symbol;
         length++;
@@ -105,6 +111,7 @@ status get_string(FILE* in, char** string){
         }
         symbol = fgetc(in);
     }
+
     (*string)[length] = 0;
     if (symbol == EOF) return end;
     return ok;
