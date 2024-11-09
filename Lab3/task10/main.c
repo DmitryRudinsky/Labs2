@@ -36,6 +36,7 @@ int main(int argc, char* argv[]){
         print_tree(out, tree, 0);
         fprintf(out, "\n---------------------------\n");
         free_tree(tree);
+        free(string);
         string = NULL;
     }
     if (status_code == allocation_error){

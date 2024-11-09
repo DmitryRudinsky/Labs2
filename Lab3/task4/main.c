@@ -32,6 +32,7 @@ int main()
             case add_mail_cmd:
                 status = read_mail(&mail);
                 if (status) {
+                    destruct_mail(&mail);
                     break;
                 }
                 if (post.mails_cnt == 0) {

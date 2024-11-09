@@ -286,7 +286,7 @@ status_code get_string(String* input)
         return INVALID_PARAMS;
     }
     c = getchar();
-    while(c != '\n') {
+    while(c != '\n' && c != EOF) {
         status = string_insert(input, c);
         if(status) {
             destruct_string(input);
@@ -296,6 +296,7 @@ status_code get_string(String* input)
     }
     return OK;
 }
+
 
 status_code string_to_uint(const String str, int* n)
 {
@@ -435,11 +436,21 @@ status_code check_time_format(const String str_time)
 
 status_code get_id_string(String* id, int len)
 {
-    status_code status = get_string(id);
+    status_code status;
     if (id == NULL) return INVALID_PARAMS;
-    if (status) return status;
-    return check_uint_format(*id, len);
+    status = get_string(id);
+    if (status) {
+        destruct_string(id);
+        return status;
+    }
+    status = check_uint_format(*id, len);
+    if (status) {
+        destruct_string(id);
+        return status;
+    }
+    return OK;
 }
+
 
 status_code read_adress(Address* address)
 {
@@ -449,54 +460,99 @@ status_code read_adress(Address* address)
     if (address == NULL) return INVALID_PARAMS;
 
     create_string(&str, NULL);
+
     printf("City: ");
     status = get_string(&str);
-    if (status) return status;
-    if (str.length == 0) return INVALID_INPUT;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
+    if (str.length == 0) {
+        destruct_string(&str);
+        return INVALID_INPUT;
+    }
     address->city = str;
     str.head = NULL;
     str.length = 0;
 
     printf("Street: ");
     status = get_string(&str);
-    if (status) return status;
-    if (str.length == 0) return INVALID_INPUT;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
+    if (str.length == 0) {
+        destruct_string(&str);
+        return INVALID_INPUT;
+    }
     address->street = str;
     str.head = NULL;
     str.length = 0;
 
     printf("Building: ");
     status = get_string(&str);
-    if (status) return status;
-    if (str.length == 0) return INVALID_INPUT;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
+    if (str.length == 0) {
+        destruct_string(&str);
+        return INVALID_INPUT;
+    }
     address->building = str;
     str.head = NULL;
     str.length = 0;
 
     printf("House number: ");
     status = get_string(&str);
-    if (status) return status;
-    if (str.length == 0) return INVALID_INPUT;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
+    if (str.length == 0) {
+        destruct_string(&str);
+        return INVALID_INPUT;
+    }
     status = string_to_uint(str, &n);
-    if (status) return status;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
     address->house_number = n;
-    str.head = NULL;
-    str.length = 0;
+    destruct_string(&str);
+
+    create_string(&str, NULL);
 
     printf("Apartment number: ");
     status = get_string(&str);
-    if (status) return status;
-    if (str.length == 0) return INVALID_INPUT;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
+    if (str.length == 0) {
+        destruct_string(&str);
+        return INVALID_INPUT;
+    }
     status = string_to_uint(str, &n);
-    if (status) return status;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
     address->apartment_number = n;
-    str.head = NULL;
-    str.length = 0;
+    destruct_string(&str);
+
+    create_string(&str, NULL);
 
     printf("Receiver ID (6 digits): ");
     status = get_id_string(&str, 6);
-    if (status) return status;
-    if (str.length == 0) return INVALID_INPUT;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
+    if (str.length == 0) {
+        destruct_string(&str);
+        return INVALID_INPUT;
+    }
     address->receiver_id = str;
     str.head = NULL;
     str.length = 0;
@@ -520,37 +576,58 @@ status_code read_mail(Mail* mail)
     }
 
     create_string(&str, NULL);
+
     printf("Mail ID (14 digits): ");
     status = get_id_string(&str, 14);
-    if (status) return status;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
     mail->mail_id = str;
     str.head = NULL;
     str.length = 0;
 
     printf("Delivery time (dd:MM:yyyy hh:mm:ss): ");
     status = get_string(&str);
-    if (status) return status;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
     status = check_time_format(str);
-    if (status) return status;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
     mail->delivery_time = str;
     str.head = NULL;
     str.length = 0;
 
     printf("Weight: ");
     status = get_string(&str);
-    if (status) return status;
-    if (str.length == 0) return INVALID_INPUT;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
+    if (str.length == 0) {
+        destruct_string(&str);
+        return INVALID_INPUT;
+    }
     status = string_to_udouble(str, &n);
-    if (status) return status;
+    if (status) {
+        destruct_string(&str);
+        return status;
+    }
     mail->weight = n;
-    str.head = NULL;
-    str.length = 0;
+    destruct_string(&str);
 
     get_time_string(&str);
     mail->creation_time = str;
+    str.head = NULL;
+    str.length = 0;
     mail->is_delivered = 0;
     return OK;
 }
+
 
 status_code read_post(Post* post)
 {
