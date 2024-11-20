@@ -1,2 +1,6 @@
-1) clang -g -o memory_leak_example options.c main.c 
-2) clang -g -o memory_leak_example options.c main.c r.txt w.txt
+valgrind --leak-check=full          
+        --show-leak-kinds=all          
+        --track-origins=yes          
+        --verbose          
+        --log-file=valgrind-out.txt          
+        ./task10 /home/dmitry/C/Labs2/Lab3/task10/r.txt /home/dmitry/C/Labs2/Lab3/task10/w.txt
