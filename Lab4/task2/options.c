@@ -1,104 +1,72 @@
 #include "options.h"
 
-status_code create_array(Array **ar, char c)
-{
-    (*ar) = (Array *)malloc(sizeof(Array));
-    if (!(*ar))
-        return code_error_alloc;
+status_code create_array(Array **ar, char c) {
+    *ar = (Array *)malloc(sizeof(Array));
+    if (!(*ar)) return code_error_alloc;
+
     (*ar)->name = toupper(c);
     (*ar)->size = 0;
     (*ar)->capacity = 256;
+
     (*ar)->data = (int *)malloc(sizeof(int) * (*ar)->capacity);
-    if (!(*ar)->data)
-    {
+    if (!(*ar)->data) {
         free(*ar);
         return code_error_alloc;
     }
-    // printf("zdesssssaaaqqq\n");
     return code_success;
 }
 
-status_code add_to_array(Array **arr, char c, int number)
-{
-    status_code st_act;
-    if (!(*arr))
-    {
-        st_act = create_array(arr, c);
+status_code add_to_array(Array **arr, char c, int number) {
+    if (!(*arr)) {
+        status_code st_act = create_array(arr, c);
         if (st_act != code_success)
-        {
             return st_act;
-        }
     }
-    (*arr)->data[(*arr)->size] = number;
-    (*arr)->size++;
-    if ((*arr)->size == (*arr)->capacity - 1)
-    {
+
+    if ((*arr)->size == (*arr)->capacity - 1) {
         int *tmp = realloc((*arr)->data, sizeof(int) * (*arr)->capacity * 2);
         if (!tmp)
-        {
             return code_error_alloc;
-        }
-        else
-        {
-            (*arr)->data = tmp;
-            (*arr)->capacity *= 2;
-        }
+
+        (*arr)->data = tmp;
+        (*arr)->capacity *= 2;
     }
+
+    (*arr)->data[(*arr)->size++] = number;
     return code_success;
 }
 
-status_code remove_from_array(Array *arr, int index, int count)
-{
-    if (count <= 0 || index > arr->size)
+status_code remove_from_array(Array *arr, int index, int count) {
+    if (!arr || count <= 0 || index >= arr->size)
         return code_invalid_parameter;
-    int size = arr->size;
-    int count_deleted = 0;
-    for (int i = index; i < size; i++)
-    {
-        if (i + count < size)
-        {
-            // printf("here\n");
-            arr->data[i] = arr->data[i + count];
-        }
-    }
-    int *tmp = NULL;
-    if (count < size)
-    {
-        tmp = realloc(arr->data, sizeof(int) * (size - count));
-        arr->size -= count;
-    }
-    else
-    {
-        tmp = realloc(arr->data, sizeof(int) * index);
-        arr->size = index;
-    }
+
+    for (int i = index; i + count < arr->size; i++)
+        arr->data[i] = arr->data[i + count];
+
+    int *tmp = realloc(arr->data, sizeof(int) * (arr->size - count));
     if (!tmp)
-    {
         return code_error_alloc;
-    }
-    else
-    {
-        arr->data = tmp;
-    }
+
+    arr->data = tmp;
+    arr->size -= count;
     return code_success;
 }
 
-status_code save_array(Array *arr, const char *filename)
-{
+status_code save_array(Array *arr, const char *filename) {
     if (!arr)
         return code_invalid_parameter;
+
     FILE *file = fopen(filename, "w");
     if (!file)
-    {
         return code_error_oppening;
-    }
+
     for (int i = 0; i < arr->size; i++)
-    {
         fprintf(file, "%d ", arr->data[i]);
-    }
+
     fclose(file);
     return code_success;
 }
+
 
 void free_array(Array *arr)
 {
@@ -108,37 +76,29 @@ void free_array(Array *arr)
     free(arr);
 }
 
-status_code load_array(Array **arr, char name, const char *filename)
-{
-    status_code st_act;
-    if (!(*arr))
-    {
-        st_act = create_array(arr, name);
+status_code load_array(Array **arr, char name, const char *filename) {
+    if (!(*arr)) {
+        status_code st_act = create_array(arr, name);
         if (st_act != code_success)
             return st_act;
     }
 
     FILE *file = fopen(filename, "r");
     if (!file)
-    {
         return code_error_oppening;
-    }
 
     char line[1024];
-    while (fgets(line, sizeof(line), file))
-    {
+    while (fgets(line, sizeof(line), file)) {
         char *token = strtok(line, " \t\n");
-        while (token)
-        {
+        while (token) {
             char *endptr;
             int number = strtol(token, &endptr, 10);
-            if (*endptr == '\0')
-            {
-                st_act = add_to_array(arr, name, number);
-                if (st_act != code_success)
-                {
-                    free_array(*arr);
+            if (*endptr == '\0') { // Если токен — число
+                status_code st_act = add_to_array(arr, name, number);
+                if (st_act != code_success) {
                     fclose(file);
+                    free_array(*arr);
+                    *arr = NULL;
                     return st_act;
                 }
             }
@@ -150,92 +110,56 @@ status_code load_array(Array **arr, char name, const char *filename)
     return code_success;
 }
 
-status_code concat_arrays(Array *a, Array *b)
-{
+status_code concat_arrays(Array *a, Array *b) {
     if (!b || b->size == 0)
         return code_success;
-    int size = b->size;
-    status_code st_act;
-    for (int i = 0; i < size; i++)
-    {
-        st_act = add_to_array(&a, a->name, b->data[i]);
+
+    for (int i = 0; i < b->size; i++) {
+        status_code st_act = add_to_array(&a, a->name, b->data[i]);
         if (st_act != code_success)
-        {
-            free_array(a);
-            free_array(b);
             return st_act;
-        }
     }
     return code_success;
 }
 
-void stats_array(Array *a)
-{
+
+void stats_array(Array *a) {
     if (!a)
         return;
+
     printf("Array %c\n", a->name);
     printf("Size: %d\n", a->size);
     if (a->size == 0)
         return;
-    int size = a->size;
-    int max_count = 0;
-    int most_common = a->data[0];
-    for (int i = 1; i < size; i++)
-    {
-        int counter = 1;
-        for (int j = i + 1; j < size; j++)
-        {
-            if (a->data[i] == a->data[j])
-            {
-                counter++;
-            }
-            if (counter > max_count)
-            {
-                max_count = counter;
-                most_common = a->data[i];
-            }
-            else if (counter == max_count)
-            {
-                most_common = fmax(most_common, a->data[i]);
-            }
-        }
-    }
-    printf("Mode: %d\n", most_common);
-    int sum = a->data[0];
-    int max_elem = a->data[0];
-    int min_elem = a->data[0];
-    int index_max = 0;
-    int index_min = 0;
-    for (int i = 1; i < size; i++)
-    {
+
+    int max_elem = a->data[0], min_elem = a->data[0];
+    int index_max = 0, index_min = 0, sum = 0;
+
+    for (int i = 0; i < a->size; i++) {
         sum += a->data[i];
-        if (a->data[i] > max_elem)
-        {
+        if (a->data[i] > max_elem) {
             max_elem = a->data[i];
             index_max = i;
         }
-        if (a->data[i] < min_elem)
-        {
+        if (a->data[i] < min_elem) {
             min_elem = a->data[i];
             index_min = i;
         }
     }
-    double mean = sum /= size;
-    printf("Max: %d, index: %d\n", max_elem, index_max);
-    printf("Min: %d, index: %d\n", min_elem, index_min);
-    printf("Mean: %lf\n", mean);
-    double max_sigma = 0;
-    for (int i = 0; i < size; i++)
-    {
-        double cur = fabs(a->data[i] - mean);
-        if (cur > max_sigma)
-        {
-            max_sigma = cur;
-        }
+
+    double mean = (double)sum / a->size;
+    double sigma = 0;
+
+    for (int i = 0; i < a->size; i++) {
+        double diff = fabs(a->data[i] - mean);
+        if (diff > sigma)
+            sigma = diff;
     }
 
-    printf("Sigma: %lf\n", max_sigma);
-    printf("\n");
+    printf("Max: %d, index: %d\n", max_elem, index_max);
+    printf("Min: %d, index: %d\n", min_elem, index_min);
+    printf("Mean: %.6lf\n", mean);
+    printf("Sigma: %.6lf\n", sigma);
 }
 
 Array *find_array(Array **storage, int size, char name)
@@ -317,17 +241,15 @@ void print(Array *arr, char name, char *mode)
     }
 }
 
-status_code copy_arrays(Array *a, Array **b, int start, int end)
-{
-    status_code st_act;
-    if (!(*b))
+status_code copy_arrays(Array *a, Array **b, int start, int end) {
+    if (!a || !(*b))
         return code_invalid_parameter;
-    if (start > a->size)
+
+    if (start >= a->size || end < start)
         return code_invalid_parameter;
-    int upper_bound = fmin(end, a->size);
-    for (int i = start; i < upper_bound; i++)
-    {
-        st_act = add_to_array(b, (*b)->name, a->data[i]);
+
+    for (int i = start; i <= end && i < a->size; i++) {
+        status_code st_act = add_to_array(b, (*b)->name, a->data[i]);
         if (st_act != code_success)
             return st_act;
     }
@@ -385,34 +307,25 @@ status_code rand_fill_array(Array **arr, char name, char *arg)
     return code_success;
 }
 
-void free_storage(Array **st, int size)
-{
+void free_storage(Array **st, int size) {
     if (!st)
         return;
 
     for (int i = 0; i < size; i++)
-    {
         free_array(st[i]);
-    }
+
     free(st);
 }
 
-void sort(Array *a, char mode)
-{
+
+void sort(Array *a, char mode) {
     if (!a)
         return;
+
     if (mode == '+')
-    {
         qsort(a->data, a->size, sizeof(int), compare_ascending);
-    }
     else if (mode == '-')
-    {
         qsort(a->data, a->size, sizeof(int), compare_descending);
-    }
-    else
-    {
-        return;
-    }
 }
 
 void Shuffle(Array *a)
