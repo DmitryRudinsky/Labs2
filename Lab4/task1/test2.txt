@@ -1,0 +1,61 @@
+#define HELLO Привет
+#define WORLD Мир
+#define GREETING Здравствуйте
+#define GOODBYE До_свидания
+#define NAME Имя
+#define AGE Возраст
+#define FRIEND Друг
+#define FAMILY Семья
+#define STUDENT Студент
+#define TEACHER Учитель
+#define WORK Работа
+#define HOME Дом
+#define SCHOOL Школа
+#define UNIVERSITY Университет
+#define COUNTRY Страна
+#define CITY Город
+#define STREET Улица
+#define ROAD Дорога
+#define HAPPY Счастлив
+#define SAD Грустный
+#define FAST Быстро
+#define SLOW Медленно
+#define BIG Большой
+#define SMALL Маленький
+#define CAT Кот
+#define DOG Собака
+#define HOUSE Дом
+#define CAR Машина
+#define TREE Дерево
+#define BOOK Книга
+#define SKY Небо
+#define RIVER Река
+#define MOUNTAIN Гора
+#define LAKE Озеро
+#define OCEAN Океан
+#define SUN Солнце
+#define MOON Луна
+#define STAR Звезда
+#define NIGHT Ночь
+#define DAY День
+#define TIME Время
+#define LOVE Любовь
+#define FRIENDSHIP Дружба
+#define COURAGE Смелость
+#define HOPE Надежда
+#define DREAM Мечта
+#define LIFE Жизнь
+#define DEATH Смерть
+#define FOOD Еда
+#define WATER Вода
+#define AIR Воздух
+#define FIRE Огонь
+#define EARTH Земля
+
+HELLO, WORLD! GREETING, STUDENT. HOW ARE YOU? THE TEACHER SAID: "STUDY WELL." 
+THE FAMILY LIVES IN A BIG HOUSE ON A SMALL STREET IN THE CITY. 
+THE CAT AND DOG LOVE PLAYING IN THE YARD. 
+ONCE UPON A TIME, A FRIEND WENT ON A JOURNEY TO THE MOUNTAIN. 
+THE SKY WAS CLEAR, THE SUN WAS BRIGHT, AND THE OCEAN WAS CALM. 
+THEY FELT HAPPY, BUT ALSO SAD, THINKING ABOUT LIFE AND DREAMS. 
+THEY REALIZED THAT LOVE AND FRIENDSHIP MAKE EVERYTHING BETTER.
