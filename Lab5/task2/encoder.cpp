@@ -6,13 +6,11 @@
 #include <sstream>
 #include <unordered_map>
 
-// Таблица символов Base64
 const char base64_chars[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 
-// Таблица обратного преобразования Base64
 static const std::unordered_map<char, unsigned char> base64_reverse = []() {
     std::unordered_map<char, unsigned char> table;
     for (size_t i = 0; i < sizeof(base64_chars) - 1; ++i) {
@@ -21,7 +19,6 @@ static const std::unordered_map<char, unsigned char> base64_reverse = []() {
     return table;
 }();
 
-// Функция кодирования в Base64
 std::string encodeBase64(const std::vector<std::byte>& data) {
     std::ostringstream result;
     size_t i = 0;
@@ -65,7 +62,6 @@ std::string encodeBase64(const std::vector<std::byte>& data) {
     return result.str();
 }
 
-// Функция декодирования Base64
 std::vector<std::byte> decodeBase64(const std::string& encoded) {
     std::vector<std::byte> result;
     size_t len = encoded.size();
@@ -103,14 +99,12 @@ std::vector<std::byte> decodeBase64(const std::string& encoded) {
     return result;
 }
 
-// Конструктор
 Encoder::Encoder(const std::vector<std::byte>& encryption_key) : key(encryption_key) {
     if (key.empty()) {
         throw std::invalid_argument("Encryption key cannot be empty.");
     }
 }
 
-// Mutator для изменения ключа
 void Encoder::setKey(const std::vector<std::byte>& new_key) {
     if (new_key.empty()) {
         throw std::invalid_argument("New key cannot be empty.");
@@ -118,7 +112,6 @@ void Encoder::setKey(const std::vector<std::byte>& new_key) {
     key = new_key;
 }
 
-// RC4 KSA (Key-Scheduling Algorithm)
 void Encoder::keyScheduling(std::vector<std::byte>& S) {
     size_t key_length = key.size();
     for (size_t i = 0; i < 256; ++i) {
@@ -131,7 +124,6 @@ void Encoder::keyScheduling(std::vector<std::byte>& S) {
     }
 }
 
-// RC4 PRGA (Pseudo-Random Generation Algorithm)
 void Encoder::pseudoRandomGeneration(const std::vector<std::byte>& S, std::vector<std::byte>& data) {
     size_t i = 0, j = 0;
     std::vector<std::byte> S_copy = S;
@@ -145,7 +137,6 @@ void Encoder::pseudoRandomGeneration(const std::vector<std::byte>& S, std::vecto
     }
 }
 
-// Encode/Decode метод
 void Encoder::encode(const std::string& input_file, const std::string& output_file, bool is_encrypt) {
     std::ifstream input(input_file, std::ios::binary);
     if (!input.is_open()) {
@@ -158,7 +149,6 @@ void Encoder::encode(const std::string& input_file, const std::string& output_fi
     std::vector<std::byte> input_data;
 
     if (is_encrypt) {
-        // Преобразование содержимого файла в std::vector<std::byte>
         std::transform(
             input_content.begin(),
             input_content.end(),
@@ -166,7 +156,6 @@ void Encoder::encode(const std::string& input_file, const std::string& output_fi
             [](char c) { return static_cast<std::byte>(c); }
         );
     } else {
-        // Декодирование из Base64 при дешифровании
         input_data = decodeBase64(input_content);
     }
 
@@ -174,16 +163,13 @@ void Encoder::encode(const std::string& input_file, const std::string& output_fi
         throw std::runtime_error("Input file is empty or decoding failed: " + input_file);
     }
 
-    // RC4 Encryption/Decryption
     std::vector<std::byte> S(256);
     keyScheduling(S);
     pseudoRandomGeneration(S, input_data);
 
     if (is_encrypt) {
-        // Преобразование в Base64
         std::string encoded_data = encodeBase64(input_data);
 
-        // Запись результата в выходной файл
         std::ofstream output(output_file, std::ios::binary);
         if (!output.is_open()) {
             throw std::runtime_error("Failed to open output file: " + output_file);
@@ -192,7 +178,6 @@ void Encoder::encode(const std::string& input_file, const std::string& output_fi
         output << encoded_data;
         output.close();
     } else {
-        // Запись расшифрованного результата в файл
         std::ofstream output(output_file, std::ios::binary);
         if (!output.is_open()) {
             throw std::runtime_error("Failed to open output file: " + output_file);
