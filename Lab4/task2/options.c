@@ -93,7 +93,7 @@ status_code load_array(Array **arr, char name, const char *filename) {
         while (token) {
             char *endptr;
             int number = strtol(token, &endptr, 10);
-            if (*endptr == '\0') { // Если токен — число
+            if (*endptr == '\0') { 
                 status_code st_act = add_to_array(arr, name, number);
                 if (st_act != code_success) {
                     fclose(file);
@@ -369,9 +369,7 @@ status_cmd command(char *input, Array **storage, int *size_storage)
     {
         return cmd_invalid_parameter;
     }
-    // printf("size storage: %d\n", *size_storage);
     int size = strlen(input);
-    // printf("\t%s, size = %d\n", input, size);
     int index = 0;
     char *cmd = (char *)malloc(sizeof(char) * size);
     if (!cmd)
@@ -387,7 +385,6 @@ status_cmd command(char *input, Array **storage, int *size_storage)
     for (int i = 0; i < size; i++)
     {
         char symb = input[i];
-        // printf("dymb %c %d %d\n", symb, is_read_cmd, index);
         if (!isspace(symb))
         {
             if (symb == ',' || symb == ';')
@@ -433,7 +430,6 @@ status_cmd command(char *input, Array **storage, int *size_storage)
     int size_arg = strlen(arg);
     Array *tmp = NULL;
     bool need_to_add = false;
-    // printf("%s\n %s\n", cmd, arg);
     if (!strcmp(cmd, "Load"))
     {
         char *filename = (char *)malloc(sizeof(char) * size);
@@ -443,7 +439,6 @@ status_cmd command(char *input, Array **storage, int *size_storage)
             free(arg);
             return cmd_error_alloc;
         }
-        // printf("zdes\n");
         name_array_first = arg[0];
         for (int i = 2; i < size_arg; i++)
         {
@@ -451,16 +446,13 @@ status_cmd command(char *input, Array **storage, int *size_storage)
             index++;
         }
         filename[index] = '\0';
-        // printf("%s file\n", filename);
         index = 0;
         tmp = find_array(storage, *size_storage, name_array_first);
         if (tmp == NULL)
             need_to_add = true;
-        // printf("zdesfdsasdf\n");
         st_act = load_array(&tmp, name_array_first, filename);
         if (st_act != code_success)
         {
-            // printf("su4ara\n");
             free(filename);
             free(cmd);
             free(arg);
@@ -474,8 +466,6 @@ status_cmd command(char *input, Array **storage, int *size_storage)
             }
         }
         free(filename);
-        // printf("zaebis dobavlenie\n");
-        // stats_array(tmp);
         if (need_to_add)
         {
             add_to_storage(storage, tmp, size_storage);

@@ -1,34 +1,50 @@
 #include "options.h"
 
 status_code create_storage(Storage** st) {
-    (*st) = (Storage*)malloc(sizeof(Storage));
+    if (!st) return code_invalid_parameter;
+
+    *st = (Storage*)malloc(sizeof(Storage));
     if (!(*st)) return code_error_alloc;
+
     (*st)->capacity = MIN_SIZE;
     (*st)->size = 0;
     (*st)->data = (MemoryCell*)malloc(sizeof(MemoryCell) * MIN_SIZE);
     if (!(*st)->data) {
         free(*st);
+        *st = NULL;
         return code_error_alloc;
     }
+
+    for (int i = 0; i < MIN_SIZE; i++) {
+        (*st)->data[i].var = NULL;
+        (*st)->data[i].value = 0;
+    }
+
     return code_success;
 }
 
 status_code resize_storage(Storage** st) {
-    if (!st) return code_invalid_parameter;
+    if (!st || !(*st)) return code_invalid_parameter;
 
-    MemoryCell* tmp = realloc((*st)->data, (*st)->capacity * 2);
+    size_t new_capacity = (*st)->capacity * 2;
+    MemoryCell* tmp = realloc((*st)->data, sizeof(MemoryCell) * new_capacity);
     if (!tmp) {
         return code_error_alloc;
-    } else {
-        (*st)->data = tmp;
-        (*st)->capacity *= 2;
     }
+
+    (*st)->data = tmp;
+    (*st)->capacity = new_capacity;
+
+    for (int i = (*st)->size; i < (*st)->capacity; i++) {
+        (*st)->data[i].var = NULL;
+        (*st)->data[i].value = 0;
+    }
+
     return code_success;
 }
 
 void free_cell(MemoryCell* cell) {
-    if (!cell) return;
-    if (cell->var) {
+    if (cell && cell->var) {
         free(cell->var);
         cell->var = NULL;
     }
@@ -37,29 +53,31 @@ void free_cell(MemoryCell* cell) {
 void free_storage(Storage* st) {
     if (!st) return;
 
-    int size = st->size;
     if (st->data) {
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < st->size; i++) {
             free_cell(&st->data[i]);
         }
-        free(st->data);   
+        free(st->data);
+        st->data = NULL;
     }
+
     free(st);
-    st = NULL;
 }
 
-status_code create_cell(MemoryCell** cell, char* name, int val) {
-    if (!name) return code_invalid_parameter;
 
-    (*cell) = (MemoryCell*)malloc(sizeof(MemoryCell));
-    if (!(*cell)) {
-        return code_error_alloc;
-    }
+status_code create_cell(MemoryCell** cell, char* name, int val) {
+    if (!cell || !name) return code_invalid_parameter;
+
+    *cell = (MemoryCell*)malloc(sizeof(MemoryCell));
+    if (!(*cell)) return code_error_alloc;
+
     (*cell)->var = strdup(name);
     if (!(*cell)->var) {
         free(*cell);
+        *cell = NULL;
         return code_error_alloc;
     }
+
     (*cell)->value = val;
     return code_success;
 }
@@ -70,7 +88,6 @@ int compare_cells(const void* a, const void* b) {
 
 int get_value_index(Storage* st, int index) {
     if (!st) return -1;
-    //printf("index to check %d\n", index);
     return st->data[index].value;
 }
 
@@ -91,28 +108,30 @@ int binary_search(Storage* st, char* key) {
 }
 
 status_code add_cell(Storage** st, char* name, int value) {
-    if (!name) return code_invalid_parameter;
-    int index = (*st)->size;
-    MemoryCell* new = NULL;
+    if (!st || !(*st) || !name) return code_invalid_parameter;
+
     status_code st_act;
-    //printf("suka %s\n", name);
-    st_act = create_cell(&new, name, value);
-    if (st_act != code_success) {
-        return st_act;
-    }
-    //printf("        addd stroka %s\n", new->var);
-    (*st)->data[index] = *new;
-    if ((*st)->size + 1 == (*st)->capacity) {
+    MemoryCell new_cell;
+    new_cell.var = strdup(name);
+    if (!new_cell.var) return code_error_alloc;
+
+    new_cell.value = value;
+
+    if ((*st)->size == (*st)->capacity) {
         st_act = resize_storage(st);
         if (st_act != code_success) {
-            free_cell(new);
+            free(new_cell.var);
             return st_act;
         }
     }
+
+    (*st)->data[(*st)->size] = new_cell;
     (*st)->size++;
     qsort((*st)->data, (*st)->size, sizeof(MemoryCell), compare_cells);
+
     return code_success;
 }
+
 
 status_code edit_var(Storage* st, char* name, int new_val) {
     //printf("suka upper %s\n", name);
@@ -182,7 +201,6 @@ status_code process_line(char* line, Storage* st) {
 
     int size = strlen(line);
     int index = 0;  
-    //printf("SIZE %d\n", size);
     char* cmd = (char*)malloc(sizeof(char) * size);
     if (!cmd) return code_error_alloc;
 
@@ -207,7 +225,6 @@ status_code process_line(char* line, Storage* st) {
     for (int i = 0; i < size; i++) {
         c = line[i];
         if (!isspace(c) && c != '\n' && c != '\r' && c != ';') {
-            //printf("symbol %c\n", c);
             Operator op = get_op(c);
             if (!is_read_first) {
                 if (c == '=') {
@@ -216,7 +233,6 @@ status_code process_line(char* line, Storage* st) {
                     is_read_first = true;
                 } else {
                     cmd[index] = c;
-                    //printf("    cmd add %c\n", cmd[index]);
                     index++;
                 }
             } 
@@ -224,7 +240,6 @@ status_code process_line(char* line, Storage* st) {
                 if (c == '=') continue;
                 if (op == INVALID) {
                     arg_one[index] = c;
-                    //printf("zalupa %c\n", arg_one[index]);
                     index++;
                 } else {
                     action = op;
@@ -243,7 +258,6 @@ status_code process_line(char* line, Storage* st) {
                     is_read_third = true;
                 }
             }
-            //printf("    %d index\n", index);
         } else if (isspace(c) && c != '\n' && c != '\r') {
             if (!is_read_first) {
                 cmd[index] = '\0';
@@ -252,7 +266,6 @@ status_code process_line(char* line, Storage* st) {
             } 
         }
     }
-    //printf("%d %d %d\n", is_read_first, is_read_second, is_read_third);
     if (!is_read_first) {
         cmd[index] = '\0';
         index = 0;
@@ -262,10 +275,6 @@ status_code process_line(char* line, Storage* st) {
         index = 0;
     }
     if (!is_read_third) arg_two[index] = '\0';
-    //printf("command: %s %d\n", cmd, strlen(cmd));
-    //printf("arg_one: %s %d\n", arg_one, strlen(arg_one));
-    //printf("arg_two: %s %d\n", arg_two, strlen(arg_two));
-    
     if (!strcmp(cmd, "print")) {
         print(st, arg_one);
     } else {
@@ -273,7 +282,6 @@ status_code process_line(char* line, Storage* st) {
             int _value;
             if (is_number_str(arg_one)) {
                 _value = atof(arg_one);
-                //printf("        numberrr %d\n", _value);
                 st_act = edit_var(st, cmd, _value);
                 if (st_act != code_success) {
                     free(cmd);
@@ -300,15 +308,11 @@ status_code process_line(char* line, Storage* st) {
                 }
             }
         } else {
-            //printf("1111\n");
             int _value1, _value2;
-            //print_storage(st);
             if (is_number_str(arg_one)) {
                 _value1 = atof(arg_one);
-                //printf("2222\n");
             } else {
                 int index_find = binary_search(st, arg_one);
-                //printf("%d--\n", index);
                 if (index_find == -1) {
                     free(cmd);
                     free(arg_one);
@@ -316,11 +320,9 @@ status_code process_line(char* line, Storage* st) {
                     return code_invalid_parameter;
                 }
                 _value1 = get_value_index(st, index_find);
-                //printf("3333\n");
             }
             if (is_number_str(arg_two)) {
                 _value2 = atof(arg_two);
-                //printf("4444\n");
             } else {
                 int index_find = binary_search(st, arg_two);
                 if (index_find == -1) {
@@ -330,10 +332,8 @@ status_code process_line(char* line, Storage* st) {
                     return code_invalid_parameter;
                 }
                 _value2 = get_value_index(st, index_find);
-                //printf("5555\n");
             }
             int result;
-            //printf("%d -- %d\n", _value1, _value2);
             st_act = solve_equation(action, _value1, _value2, &result);
             if (st_act != code_success) {
                 free(cmd);
@@ -341,7 +341,6 @@ status_code process_line(char* line, Storage* st) {
                 free(arg_two);
                 return st_act;
             }
-            //printf("6666\n");
             printf("Result: %d\n", result);
             st_act = edit_var(st, cmd, result);
             if (st_act != code_success) {
@@ -404,7 +403,8 @@ status_code process_file(const char* filename) {
         return code_error_oppening;
     }
     char* line = NULL;
-    int read;
+    size_t len = 0;
+    size_t read;
     status_code st_act;
     Storage* st = NULL;
     st_act = create_storage(&st);
@@ -412,20 +412,16 @@ status_code process_file(const char* filename) {
         fclose(file);
         return st_act;
     }
-    while ((read = getline(&line, &(size_t){0}, file)) != -1) {
-        if (read == -1) {
-            free(line);
-            return code_error_alloc;
-        }
+
+    while ((read = getline(&line, &len, file)) != -1) {
         st_act = process_line(line, st);
+        free(line);
+        line = NULL;
         if (st_act != code_success) {
-            free(line);
             fclose(file);
             free_storage(st);
             return st_act;
         }
-        free(line);
-        line = NULL;
     }
     free(line);
     fclose(file);

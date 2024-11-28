@@ -73,6 +73,7 @@ int main(int argc, char* argv[]) {
                 break;
             case cmd_exit:
                 break;
+                exit;
             case cmd_invalid_parameter:
                 printf("Invalid parameter detected!!!\n");
                 break;

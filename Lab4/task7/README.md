@@ -1,0 +1,1 @@
+valgrind --leak-check=full  ./task7 /home/dmitry/C/Labs2/Lab4/task7/test.txt
