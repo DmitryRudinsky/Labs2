@@ -30,11 +30,9 @@ status_code get_line(char** arg) {
     (*arg) = (char*)malloc(sizeof(char) * STR_SIZE);
     if (!(*arg)) return code_error_alloc;
     char symbol = getchar();
-    //printf("%d--", toascii(symbol));
     while (symbol != '\n') {
         (*arg)[index++] = symbol;
         symbol = getchar();
-        //printf("%d--", toascii(symbol));
     }
     (*arg)[index] = '\0';
     return code_success;
@@ -61,9 +59,7 @@ int main(int argc, char* argv[]) {
             printf("Error alloc detected!!!\n");
             break;
         }
-        //printf("%s0---\n", choose);
         st_cmd = command(choose, storage, &capacity);
-        //print_storage(storage, capacity);
         switch (st_cmd) {
             case cmd_error_alloc:
                 printf("Error alloc detected!!!\n");

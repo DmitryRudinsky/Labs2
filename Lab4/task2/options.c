@@ -123,19 +123,35 @@ status_code concat_arrays(Array *a, Array *b) {
 }
 
 
-void stats_array(Array *a) {
-    if (!a)
-        return;
-
+void stats_array(Array* a) {
+    if (!a) return;
     printf("Array %c\n", a->name);
     printf("Size: %d\n", a->size);
-    if (a->size == 0)
-        return;
-
-    int max_elem = a->data[0], min_elem = a->data[0];
-    int index_max = 0, index_min = 0, sum = 0;
-
-    for (int i = 0; i < a->size; i++) {
+    if (a->size == 0) return;
+    int size = a->size;
+    int max_count = 0;
+    int most_common = a->data[0];
+    for (int i = 1; i < size; i++) {
+        int counter = 1;
+        for (int j = i + 1; j < size; j++) {
+            if (a->data[i] == a->data[j]) {
+                counter++;
+            }
+            if (counter > max_count) {
+                max_count = counter;
+                most_common = a->data[i];
+            } else if (counter == max_count) {
+                most_common = fmax(most_common, a->data[i]);
+            }
+        }
+    }
+    printf("Mode: %d\n", most_common);
+    int sum = a->data[0]; 
+    int max_elem = a->data[0]; 
+    int min_elem = a->data[0]; 
+    int index_max = 0;
+    int index_min = 0;
+    for (int i = 1; i < size; i++) {
         sum += a->data[i];
         if (a->data[i] > max_elem) {
             max_elem = a->data[i];
@@ -146,20 +162,19 @@ void stats_array(Array *a) {
             index_min = i;
         }
     }
-
-    double mean = (double)sum / a->size;
-    double sigma = 0;
-
-    for (int i = 0; i < a->size; i++) {
-        double diff = fabs(a->data[i] - mean);
-        if (diff > sigma)
-            sigma = diff;
-    }
-
+    double mean = sum /= size;
     printf("Max: %d, index: %d\n", max_elem, index_max);
     printf("Min: %d, index: %d\n", min_elem, index_min);
-    printf("Mean: %.6lf\n", mean);
-    printf("Sigma: %.6lf\n", sigma);
+    printf("Mean: %lf\n", mean);
+    double max_sigma = 0;
+    for (int i = 0; i < size; i++) {
+        double cur = fabs(a->data[i] - max_sigma);
+        if (cur - max_sigma > 1e-8) {
+            max_sigma = cur;
+        }
+    }
+    printf("Sigma: %lf\n", max_sigma);
+    printf("\n");
 }
 
 Array *find_array(Array **storage, int size, char name)
@@ -204,9 +219,21 @@ void print(Array *arr, char name, char *mode)
 {
     if (!arr)
         return;
+
+    int adjust_index(int index) {
+        if (index < 0) {
+            index += arr->size;
+        }
+        if (index < 0) {
+            return 0;
+        } else if (index >= arr->size) {
+            return arr->size - 1;
+        }
+        return index;
+    }
+
     if (!strcmp(mode, "all"))
     {
-        // printf("pechataem vse\n");
         for (int i = 0; i < arr->size; i++)
         {
             printf("%d ", arr->data[i]);
@@ -220,18 +247,19 @@ void print(Array *arr, char name, char *mode)
         if (read != 2)
         {
             int read = sscanf(mode, "%d", &left);
-            // printf("chisla: %d\n", left);
             if (read != 1)
                 return;
+            left = adjust_index(left);
             printf("%d ", arr->data[left]);
         }
         else
         {
-            if (left > right || left > arr->size || right > arr->size)
+            left = adjust_index(left);
+            right = adjust_index(right);
+            if (left > right)
             {
                 return;
             }
-            // printf("chisla: %d %d\n", left, right);
             for (int i = left; i <= right; i++)
             {
                 printf("%d ", arr->data[i]);
@@ -280,6 +308,7 @@ status_code rand_fill_array(Array **arr, char name, char *arg)
 {
     if (!arg || !strcmp(arg, "\0"))
         return code_invalid_parameter;
+    
     status_code st_act;
     if (!(*arr))
     {
@@ -287,6 +316,7 @@ status_code rand_fill_array(Array **arr, char name, char *arg)
         if (st_act != code_success)
             return st_act;
     }
+
     int count, lb, rb;
     int read = sscanf(arg, "%d %d %d", &count, &lb, &rb);
     if (read != 3)
@@ -294,6 +324,13 @@ status_code rand_fill_array(Array **arr, char name, char *arg)
         free_array(*arr);
         return code_invalid_parameter;
     }
+
+    if (lb > rb)
+    {
+        free_array(*arr);
+        return code_invalid_parameter; 
+    }
+
     for (int i = 0; i < count; i++)
     {
         int number = get_my_rand(lb, rb);

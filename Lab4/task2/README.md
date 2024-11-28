@@ -62,7 +62,7 @@ Print A, all;
 Print A, 3;
 
 Диапазон элементов:
-Print A, 2 5;
+Print A, 2, 5;
 
 11) Очистка массива:
 Free A;
